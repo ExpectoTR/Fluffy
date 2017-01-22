@@ -114,7 +114,7 @@ Description: limit 7 to 10, mode is append\(a\), words are "muhammet","ozturk","
 
 difficulty is 4 \(add the special characters to everywhere\), special characters are "?","!" and "^"
 
-`fluffy -w the quick brown fox jumps over a lazy dog -d 6`
+`fluffy -w the quick brown fox jumps over a lazy dog -d 6 -s ?!*/^-#`
 
 description: words are "the","quick","brown","fox","jumps","over","a","lazy","dog", difficulty is 6 \(top level\)
 
