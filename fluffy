@@ -1,0 +1,337 @@
+#!/usr/bin/env python3
+
+# -d difficulty     level
+# -l <min> <max>    limit
+# -m                mode
+# -o                output
+# -s                special characters
+# -w                meaningful words
+
+
+
+# ----------- MODULES ----------------
+import os
+import sys
+import itertools
+
+# ---------- VARIABLES ---------------
+
+wordArray = []
+newArray = []
+level = 4
+bottomLimit = 8
+topLimit = 12
+meaningfulList = []
+outputFile = "wordlist.txt"
+openFileMode = "w"
+
+
+# --------- FUNCTIONS ----------------
+
+def WriteToFile (outputFile,openFileMode,level):
+    with open(outputFile,openFileMode) as file:
+        if level<=4:
+            for word in wordArray:
+                file.write(str(word)+"\n")
+        else:
+            for word in newArray:
+                file.write(str(word)+"\n")
+
+def Combination (listv):
+    temp = 2
+    array = []
+    while temp<=len(listv):
+        array.extend([val for val in itertools.combinations(listv,temp)])
+        temp+=1
+    return array
+
+def ToggleFunc (listv,level):        # Function for 5th and 6th Level
+    for value in listv:
+        x=0
+        while x<len(value):
+            newArray.append(value[:x]+value[x].swapcase()+value[x+1:])
+            x+=1
+        if level==6:          # Just for 6th Level
+            array = list(set(Combination(value)))
+            y=0
+            while y<len(value):
+                indices=[]
+                for i in array[y]:
+                    indices.append(value.index(i))
+                newArray.extend(["".join(char.upper() if i in indices else char for i,char in enumerate(value))])
+                y+=1
+
+
+def Level1(words,bottomLimit,topLimit):
+    x=0
+    while x<len(words):
+        temp = words[x]
+        wordArray.extend([str(temp)+str(val) for val in words if len(str(temp)+str(val))>=bottomLimit and len(str(temp)+str(val))<=topLimit])
+        wordArray.extend([str(val)+str(temp) for val in words if len(str(temp)+str(val))>=bottomLimit and len(str(temp)+str(val))<=topLimit])
+        wordArray.extend([str(val)+str(val) for val in words if len(str(temp)+str(val))>=bottomLimit and len(str(temp)+str(val))<=topLimit])
+        wordArray.extend([str(temp)+str(temp) for val in words if len(str(temp)+str(val))>=bottomLimit and len(str(temp)+str(val))<=topLimit])
+        x+=1
+
+def Level2(words,bottomLimit,topLimit):
+    Level1(words,bottomLimit,topLimit)
+    x=0
+    swap = lambda word: word.swapcase()
+    while x<len(words):
+        temp= words[x]
+        y=0
+        while y<len(temp):
+            wordArray.extend([str(temp[y:])+str(val) for val in words if len(str(temp[y:])+str(val))>=bottomLimit and len(str(temp[y:])+str(val))<=topLimit])
+            wordArray.extend([str(val)+str(temp[y:]) for val in words if len(str(val)+str(temp[y:]))>=bottomLimit and len(str(val)+str(temp[y:]))<=topLimit])
+            wordArray.extend([str(temp[:y])+str(val) for val in words if len(str(temp[:y])+str(val))>=bottomLimit and len(str(temp[:y])+str(val))<=topLimit])
+            wordArray.extend([str(val)+str(temp[:y]) for val in words if len(str(val)+str(temp[:y]))>=bottomLimit and len(str(val)+str(temp[:y]))<=topLimit])
+            y+=1
+        wordArray.extend([swap(str(temp))+str(val) for val in words if len(str(temp)+str(val))>=bottomLimit and len(str(temp)+str(val))<=topLimit])
+        wordArray.extend([str(temp)+swap(str(val)) for val in words if len(str(temp)+str(val))>=bottomLimit and len(str(temp)+str(val))<=topLimit])
+        wordArray.extend([swap(str(temp))+swap(str(val)) for val in words if len(str(temp)+str(val))>=bottomLimit and len(str(temp)+str(val))<=topLimit])
+        x+=1
+
+def Level3(words,bottomLimit,topLimit,specialChars):
+    Level1(words,bottomLimit,topLimit)
+    Level2(words,bottomLimit,topLimit)
+    x=0
+    while x<len(words):
+        temp = words[x]
+        for char in specialChars:
+            wordArray.extend([str(temp)+str(val)+str(char) for val in words if len(str(temp)+str(val)+str(char))>=bottomLimit and len(str(temp)+str(val)+str(char))<=topLimit])
+            wordArray.extend([str(temp)+str(char)+str(val) for val in words if len(str(temp)+str(char)+str(val))>=bottomLimit and len(str(temp)+str(char)+str(val))<=topLimit])
+            wordArray.extend([str(char)+str(temp)+str(val) for val in words if len(str(char)+str(temp)+str(val))>=bottomLimit and len(str(char)+str(temp)+str(val))<=topLimit])
+        x+=1
+
+def Level4(words,bottomLimit,topLimit,specialChars):
+    Level1(words,bottomLimit,topLimit)
+    Level2(words,bottomLimit,topLimit)
+    Level3(words,bottomLimit,topLimit,specialChars)
+    x=0
+    while x<len(words):
+        temp = words[x]
+        y=0
+        while y<len(temp):
+            for char in specialChars:
+                wordArray.extend([str(temp[y:])+str(char)+str(val) for val in words if len(str(temp[y:])+str(char)+str(val))>=bottomLimit and len(str(temp[y:])+str(char)+str(val))<=topLimit])
+                wordArray.extend([str(val)+str(char)+str(temp[y:]) for val in words if len(str(val)+str(char)+str(temp[y:]))>=bottomLimit and len(str(val)+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(temp[:y])+str(char)+str(val) for val in words if len(str(temp[:y])+str(char)+str(val))>=bottomLimit and len(str(temp[:y])+str(char)+str(val))<=topLimit])
+                wordArray.extend([str(val)+str(char)+str(temp[:y]) for val in words if len(str(val)+str(char)+str(temp[:y]))>=bottomLimit and len(str(val)+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(temp[y:])+str(char)+str(val[y:]) for val in words if len(str(temp[y:])+str(char)+str(val[y:]))>=bottomLimit and len(str(temp[y:])+str(char)+str(val[y:]))<=topLimit])
+                wordArray.extend([str(val[y:])+str(char)+str(temp[y:]) for val in words if len(str(val[y:])+str(char)+str(temp[y:]))>=bottomLimit and len(str(val[y:])+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(temp[:y])+str(char)+str(val[y:]) for val in words if len(str(temp[:y])+str(char)+str(val[y:]))>=bottomLimit and len(str(temp[:y])+str(char)+str(val[y:]))<=topLimit])
+                wordArray.extend([str(val[y:])+str(char)+str(temp[:y]) for val in words if len(str(val[y:])+str(char)+str(temp[:y]))>=bottomLimit and len(str(val[y:])+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(temp[y:])+str(char)+str(val[:y]) for val in words if len(str(temp[y:])+str(char)+str(val[:y]))>=bottomLimit and len(str(temp[y:])+str(char)+str(val[:y]))<=topLimit])
+                wordArray.extend([str(val[:y])+str(char)+str(temp[y:]) for val in words if len(str(val[:y])+str(char)+str(temp[y:]))>=bottomLimit and len(str(val[:y])+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(temp[:y])+str(char)+str(val[:y]) for val in words if len(str(temp[:y])+str(char)+str(val[:y]))>=bottomLimit and len(str(temp[:y])+str(char)+str(val[:y]))<=topLimit])
+                wordArray.extend([str(val[:y])+str(char)+str(temp[:y]) for val in words if len(str(val[:y])+str(char)+str(temp[:y]))>=bottomLimit and len(str(val[:y])+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(char)+str(temp[y:])+str(val) for val in words if len(str(temp[y:])+str(char)+str(val))>=bottomLimit and len(str(temp[y:])+str(char)+str(val))<=topLimit])
+                wordArray.extend([str(char)+str(val)+str(temp[y:]) for val in words if len(str(val)+str(char)+str(temp[y:]))>=bottomLimit and len(str(val)+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(char)+str(temp[:y])+str(val) for val in words if len(str(temp[:y])+str(char)+str(val))>=bottomLimit and len(str(temp[:y])+str(char)+str(val))<=topLimit])
+                wordArray.extend([str(char)+str(val)+str(temp[:y]) for val in words if len(str(val)+str(char)+str(temp[:y]))>=bottomLimit and len(str(val)+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(char)+str(temp[y:])+str(val[y:]) for val in words if len(str(temp[y:])+str(char)+str(val[y:]))>=bottomLimit and len(str(temp[y:])+str(char)+str(val[y:]))<=topLimit])
+                wordArray.extend([str(char)+str(val[y:])+str(temp[y:]) for val in words if len(str(val[y:])+str(char)+str(temp[y:]))>=bottomLimit and len(str(val[y:])+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(char)+str(temp[:y])+str(val[y:]) for val in words if len(str(temp[:y])+str(char)+str(val[y:]))>=bottomLimit and len(str(temp[:y])+str(char)+str(val[y:]))<=topLimit])
+                wordArray.extend([str(char)+str(val[y:])+str(temp[:y]) for val in words if len(str(val[y:])+str(char)+str(temp[:y]))>=bottomLimit and len(str(val[y:])+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(char)+str(temp[y:])+str(val[:y]) for val in words if len(str(temp[y:])+str(char)+str(val[:y]))>=bottomLimit and len(str(temp[y:])+str(char)+str(val[:y]))<=topLimit])
+                wordArray.extend([str(char)+str(val[:y])+str(temp[y:]) for val in words if len(str(val[:y])+str(char)+str(temp[y:]))>=bottomLimit and len(str(val[:y])+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(char)+str(temp[:y])+str(val[:y]) for val in words if len(str(temp[:y])+str(char)+str(val[:y]))>=bottomLimit and len(str(temp[:y])+str(char)+str(val[:y]))<=topLimit])
+                wordArray.extend([str(char)+str(val[:y])+str(temp[:y]) for val in words if len(str(val[:y])+str(char)+str(temp[:y]))>=bottomLimit and len(str(val[:y])+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(temp[y:])+str(val)+str(char) for val in words if len(str(temp[y:])+str(char)+str(val))>=bottomLimit and len(str(temp[y:])+str(char)+str(val))<=topLimit])
+                wordArray.extend([str(val)+str(temp[y:])+str(char) for val in words if len(str(val)+str(char)+str(temp[y:]))>=bottomLimit and len(str(val)+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(temp[:y])+str(val)+str(char) for val in words if len(str(temp[:y])+str(char)+str(val))>=bottomLimit and len(str(temp[:y])+str(char)+str(val))<=topLimit])
+                wordArray.extend([str(val)+str(temp[:y])+str(char) for val in words if len(str(val)+str(char)+str(temp[:y]))>=bottomLimit and len(str(val)+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(temp[y:])+str(val[y:])+str(char) for val in words if len(str(temp[y:])+str(char)+str(val[y:]))>=bottomLimit and len(str(temp[y:])+str(char)+str(val[y:]))<=topLimit])
+                wordArray.extend([str(val[y:])+str(temp[y:])+str(char) for val in words if len(str(val[y:])+str(char)+str(temp[y:]))>=bottomLimit and len(str(val[y:])+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(temp[:y])+str(val[y:])+str(char) for val in words if len(str(temp[:y])+str(char)+str(val[y:]))>=bottomLimit and len(str(temp[:y])+str(char)+str(val[y:]))<=topLimit])
+                wordArray.extend([str(val[y:])+str(temp[:y])+str(char) for val in words if len(str(val[y:])+str(char)+str(temp[:y]))>=bottomLimit and len(str(val[y:])+str(char)+str(temp[:y]))<=topLimit])
+                wordArray.extend([str(temp[y:])+str(val[:y])+str(char) for val in words if len(str(temp[y:])+str(char)+str(val[:y]))>=bottomLimit and len(str(temp[y:])+str(char)+str(val[:y]))<=topLimit])
+                wordArray.extend([str(val[:y])+str(temp[y:])+str(char) for val in words if len(str(val[:y])+str(char)+str(temp[y:]))>=bottomLimit and len(str(val[:y])+str(char)+str(temp[y:]))<=topLimit])
+                wordArray.extend([str(temp[:y])+str(val[:y])+str(char) for val in words if len(str(temp[:y])+str(char)+str(val[:y]))>=bottomLimit and len(str(temp[:y])+str(char)+str(val[:y]))<=topLimit])
+                wordArray.extend([str(val[:y])+str(temp[:y])+str(char) for val in words if len(str(val[:y])+str(char)+str(temp[:y]))>=bottomLimit and len(str(val[:y])+str(char)+str(temp[:y]))<=topLimit])
+            y+=1
+        x+=1
+
+
+def Level5(words,bottomLimit,topLimit,specialChars):
+    Level1(words,bottomLimit,topLimit)
+    Level2(words,bottomLimit,topLimit)
+    Level3(words,bottomLimit,topLimit,specialChars)
+    Level4(words,bottomLimit,topLimit,specialChars)
+    ToggleFunc(wordArray,5)
+
+def Level6(words,bottomLimit,topLimit,specialChars):
+    Level1(words,bottomLimit,topLimit)
+    Level2(words,bottomLimit,topLimit)
+    Level3(words,bottomLimit,topLimit,specialChars)
+    Level4(words,bottomLimit,topLimit,specialChars)
+    Level5(words,bottomLimit,topLimit,specialChars)
+    ToggleFunc(wordArray,6)
+
+def usage():
+    print("""
+Some syntax examples:
+fluffy -l 7 10 -o output.txt -m a -w muhammet ozturk 2017 -d 4 -s ?!^
+    description: limit 7 to 10, mode is append(a), words are "muhammet","ozturk","2017",
+    difficulty is 4 (add the special characters to everywhere), special characters are "?","!" and "^"
+
+fluffy -w the quick brown fox jumps over a lazy dog -d 6
+    description: words are "the","quick","brown","fox","jumps","over","a","lazy","dog", difficulty is 6 (top level)
+    by default the case limit is 8 to 12, so some words are will no print to output file.
+
+    """)
+
+def help():
+    os.system("clear")
+    print("""
+Fluffy creates wordlist including meaningful words.
+Options:
+-d              difficulty level, as far as you know, how can the password be ?!? by default 4
+                for example: expectotr fluffy
+                level 1: thats basic, add to each other => expectotrfluffy
+                level 2: subtract and swap case a word => expectFLUFFY
+                level 3: add the special characters that given to head,middle and end => eXpect!fluffy
+                level 4: add the special characters everywhere (only once) => expeluffy!
+                level 5: swap case a few letter => expecfLuffy
+                level 6: combination the all things => expECTfluF!fy
+
+-l <min> <max>  limit, how long are the passwords ? You can learn this,trought to your social talent.
+                By default : 8 (min) 12 (max)
+
+-m              mode, what is the mode of opening file, by default : w
+                Probabilities:
+                a - append mode , append to the end of the file ex.
+                w - write mode, write to the file, if the file is not empty,erase all and write the new list to file
+
+-o              output file, determine the output file, by default : wordlist.txt
+
+-s              special characters
+
+-w              words, this option get meaningful words
+
+
+    """)
+
+# ------------- SYSTEM ARGS -------------------
+
+try:
+    if "-o" in sys.argv:
+        outputFile = sys.argv[sys.argv.index("-o")+1]
+
+    if "-w" in sys.argv:
+        a = sys.argv.index("-w")+1
+        while a < len(sys.argv):
+            if "-" not in sys.argv[a]:
+                meaningfulList.append(sys.argv[a])
+            else:
+                break
+            a+=1
+
+    if "-d" in sys.argv:
+        level = int(sys.argv[sys.argv.index("-d")+1])
+        if level<1 and level>6:
+            print("You can use only 1 to 6!")
+            usage()
+
+    if "-l" in sys.argv:
+        if int(sys.argv[sys.argv.index("-l")+1]) <= int(sys.argv[sys.argv.index("-l")+2]):
+            bottomLimit = int(sys.argv[sys.argv.index("-l")+1])
+            topLimit = int(sys.argv[sys.argv.index("-l")+2])
+        else:
+            print("Invalid limit.The first must be smaller than the second.")
+            usage()
+
+    if "-s" in sys.argv:
+        specialChars = sys.argv[sys.argv.index("-s")+1]
+
+    if "-m" in sys.argv:
+        if sys.argv[sys.argv.index("-m")+1] == "a" or sys.argv[sys.argv.index("-m")+1] == "w":
+            openFileMode = sys.argv[sys.argv.index("-m")+1]
+        else:
+            print("Unsupported open file mode! You can use \"w\" or \"a\"")
+            sys.exit()
+
+    if "--help" in sys.argv:
+        help()
+
+    if len(sys.argv)==1:
+        usage()
+
+except (IndexError):
+    usage()
+
+
+# -----------------  PROGRAM  -----------------------
+
+if level == 1:
+    os.system("clear")
+    print("Preparing...")
+    Level1(meaningfulList,bottomLimit,topLimit)
+    wordArray = list(set(wordArray))
+    WriteToFile(outputFile,openFileMode,1)
+
+elif level== 2:
+    os.system("clear")
+    print("Preparing...")
+    Level2(meaningfulList,bottomLimit,topLimit)
+    wordArray = list(set(wordArray))
+    WriteToFile(outputFile,openFileMode,2)
+
+if level== 3:
+    os.system("clear")
+    print("Preparing...")
+    if "-s" not in sys.argv:
+        print("Special characters must defined!!\n")
+        usage()
+        sys.exit()
+    Level3(meaningfulList,bottomLimit,topLimit,specialChars)
+    wordArray = list(set(wordArray))
+    WriteToFile(outputFile,openFileMode,3)
+
+if level== 4:
+    os.system("clear")
+    print("Preparing...")
+    if "-s" not in sys.argv:
+        print("Special characters must defined!!\n")
+        usage()
+        sys.exit()
+    Level4(meaningfulList,bottomLimit,topLimit,specialChars)
+    wordArray = list(set(wordArray))
+    WriteToFile(outputFile,openFileMode,4)
+
+if level == 5:
+    os.system("clear")
+    print("Preparing...")
+    if "-s" not in sys.argv:
+        print("Special characters must defined!!\n")
+        usage()
+        sys.exit()
+    Level5(meaningfulList,bottomLimit,topLimit,specialChars)
+    newArray = list(set(newArray))
+    WriteToFile(outputFile,openFileMode,5)
+
+if level == 6:
+    os.system("clear")
+    print("Preparing...")
+    if "-s" not in sys.argv:
+        print("Special characters must defined!!\n")
+        usage()
+        sys.exit()
+    Level6(meaningfulList,bottomLimit,topLimit,specialChars)
+    newArray = list(set(newArray))
+    WriteToFile(outputFile,openFileMode,6)
+
+os.system("clear")
+print("""
+Outputs
+-m mode {}
+-w words {}
+-o output {}
+-l limits {} to {}
+-d difficulty {}
+-s special characters {}
+""".format(openFileMode,meaningfulList,outputFile,bottomLimit,topLimit,level,specialChars))
+
+if level<=4:
+    print("List length: {}".format(len(wordArray)))
+else:
+    print("List length: {}".format(len(newArray)))
