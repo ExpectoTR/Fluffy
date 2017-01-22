@@ -1,5 +1,4 @@
-#
-What is Fluffy ?
+# What is Fluffy ?
 
 Fluffy is a wordlist creator tool that can be password produce. Unlike crunch, fluffy using meaningful words with -w option. So, the outputs are more flexible, lighter and more password-like than crunch's output.
 
