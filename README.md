@@ -52,7 +52,9 @@ Fluffy include some options. They are really easy to understand.
 
 Options:
 
--d difficulty level, as far as you know, how can the password be ?!? by default 4
+## -d difficulty level
+
+as far as you know, how can the password be ?!? by default 4
 
 for example: expectotr fluffy
 
@@ -70,13 +72,17 @@ level 6: combination the all things =&gt; expECTfluF!fy
 
 
 
--l &lt;min&gt; &lt;max&gt; limit, how long are the passwords ? You can learn this,trought to your social talent.
+## -l &lt;min&gt; &lt;max&gt; limit
+
+how long are the passwords ? You can learn this,trought to your social talent.
 
 By default : 8 \(min\) 12 \(max\)
 
 
 
--m mode, what is the mode of opening file, by default : w
+## -m mode
+
+what is the mode of opening file, by default : w
 
 Probabilities:
 
@@ -86,15 +92,17 @@ w - write mode, write to the file, if the file is not empty,erase all and write 
 
 
 
--o output file, determine the output file, by default : wordlist.txt
+## -o output file
+
+determine the output file, by default : wordlist.txt
 
 
 
--s special characters
+## -s special characters
 
+## -w words
 
-
--w words, this option get meaningful words
+This option get meaningful words
 
 
 
