@@ -174,7 +174,7 @@ fluffy -l 7 10 -o output.txt -m a -w muhammet ozturk 2017 -d 4 -s ?!^
     description: limit 7 to 10, mode is append(a), words are "muhammet","ozturk","2017",
     difficulty is 4 (add the special characters to everywhere), special characters are "?","!" and "^"
 
-fluffy -w the quick brown fox jumps over a lazy dog -d 6
+fluffy -w the quick brown fox jumps over a lazy dog -d 6 -s ?!*/^-#
     description: words are "the","quick","brown","fox","jumps","over","a","lazy","dog", difficulty is 6 (top level)
     by default the case limit is 8 to 12, so some words are will no print to output file.
 
