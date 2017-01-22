@@ -24,7 +24,7 @@ topLimit = 12
 meaningfulList = []
 outputFile = "wordlist.txt"
 openFileMode = "w"
-
+specialChars = ""
 
 # --------- FUNCTIONS ----------------
 
@@ -180,8 +180,7 @@ fluffy -w the quick brown fox jumps over a lazy dog -d 6
 
     """)
 
-def help():
-    os.system("clear")
+def helpFunc():
     print("""
 Fluffy creates wordlist including meaningful words.
 Options:
@@ -214,46 +213,50 @@ Options:
 # ------------- SYSTEM ARGS -------------------
 
 try:
-    if "-o" in sys.argv:
-        outputFile = sys.argv[sys.argv.index("-o")+1]
+    if len(sys.argv) == 2:
+        if "--help" in sys.argv:
+            helpFunc()
+        else:
+            usage()
 
-    if "-w" in sys.argv:
-        a = sys.argv.index("-w")+1
-        while a < len(sys.argv):
-            if "-" not in sys.argv[a]:
-                meaningfulList.append(sys.argv[a])
+    elif len(sys.argv) > 2:
+        if "-o" in sys.argv:
+            outputFile = sys.argv[sys.argv.index("-o")+1]
+
+        if "-w" in sys.argv:
+            a = sys.argv.index("-w")+1
+            while a < len(sys.argv):
+                if "-" not in sys.argv[a]:
+                    meaningfulList.append(sys.argv[a])
+                else:
+                    break
+                a+=1
+
+        if "-d" in sys.argv:
+            level = int(sys.argv[sys.argv.index("-d")+1])
+            if level<1 and level>6:
+                print("You can use only 1 to 6!")
+                usage()
+
+        if "-l" in sys.argv:
+            if int(sys.argv[sys.argv.index("-l")+1]) <= int(sys.argv[sys.argv.index("-l")+2]):
+                bottomLimit = int(sys.argv[sys.argv.index("-l")+1])
+                topLimit = int(sys.argv[sys.argv.index("-l")+2])
             else:
-                break
-            a+=1
+                print("Invalid limit.The first must be smaller than the second.")
+                usage()
 
-    if "-d" in sys.argv:
-        level = int(sys.argv[sys.argv.index("-d")+1])
-        if level<1 and level>6:
-            print("You can use only 1 to 6!")
-            usage()
+        if "-s" in sys.argv:
+            specialChars = sys.argv[sys.argv.index("-s")+1]
 
-    if "-l" in sys.argv:
-        if int(sys.argv[sys.argv.index("-l")+1]) <= int(sys.argv[sys.argv.index("-l")+2]):
-            bottomLimit = int(sys.argv[sys.argv.index("-l")+1])
-            topLimit = int(sys.argv[sys.argv.index("-l")+2])
-        else:
-            print("Invalid limit.The first must be smaller than the second.")
-            usage()
+        if "-m" in sys.argv:
+            if sys.argv[sys.argv.index("-m")+1] == "a" or sys.argv[sys.argv.index("-m")+1] == "w":
+                openFileMode = sys.argv[sys.argv.index("-m")+1]
+            else:
+                print("Unsupported open file mode! You can use \"w\" or \"a\"")
+                sys.exit()
 
-    if "-s" in sys.argv:
-        specialChars = sys.argv[sys.argv.index("-s")+1]
-
-    if "-m" in sys.argv:
-        if sys.argv[sys.argv.index("-m")+1] == "a" or sys.argv[sys.argv.index("-m")+1] == "w":
-            openFileMode = sys.argv[sys.argv.index("-m")+1]
-        else:
-            print("Unsupported open file mode! You can use \"w\" or \"a\"")
-            sys.exit()
-
-    if "--help" in sys.argv:
-        help()
-
-    if len(sys.argv)==1:
+    else:
         usage()
 
 except (IndexError):
@@ -262,76 +265,78 @@ except (IndexError):
 
 # -----------------  PROGRAM  -----------------------
 
-if level == 1:
+
+if len(sys.argv) > 2:
+    if level == 1:
+        os.system("clear")
+        print("Preparing...")
+        Level1(meaningfulList,bottomLimit,topLimit)
+        wordArray = list(set(wordArray))
+        WriteToFile(outputFile,openFileMode,1)
+
+    elif level== 2:
+        os.system("clear")
+        print("Preparing...")
+        Level2(meaningfulList,bottomLimit,topLimit)
+        wordArray = list(set(wordArray))
+        WriteToFile(outputFile,openFileMode,2)
+
+    if level== 3:
+        os.system("clear")
+        print("Preparing...")
+        if "-s" not in sys.argv and len(sys.argv)>2:
+            print("Special characters must defined!!\n")
+            usage()
+            sys.exit()
+        Level3(meaningfulList,bottomLimit,topLimit,specialChars)
+        wordArray = list(set(wordArray))
+        WriteToFile(outputFile,openFileMode,3)
+
+    if level== 4:
+        os.system("clear")
+        print("Preparing...")
+        if "-s" not in sys.argv and len(sys.argv)>2:
+            print("Special characters must defined!!\n")
+            usage()
+            sys.exit()
+        Level4(meaningfulList,bottomLimit,topLimit,specialChars)
+        wordArray = list(set(wordArray))
+        WriteToFile(outputFile,openFileMode,4)
+
+    if level == 5:
+        os.system("clear")
+        print("Preparing...")
+        if "-s" not in sys.argv and len(sys.argv)>2:
+            print("Special characters must defined!!\n")
+            usage()
+            sys.exit()
+        Level5(meaningfulList,bottomLimit,topLimit,specialChars)
+        newArray = list(set(newArray))
+        WriteToFile(outputFile,openFileMode,5)
+
+    if level == 6:
+        os.system("clear")
+        print("Preparing...")
+        if "-s" not in sys.argv and len(sys.argv)>2:
+            print("Special characters must defined!!\n")
+            usage()
+            sys.exit()
+        Level6(meaningfulList,bottomLimit,topLimit,specialChars)
+        newArray = list(set(newArray))
+        WriteToFile(outputFile,openFileMode,6)
+
     os.system("clear")
-    print("Preparing...")
-    Level1(meaningfulList,bottomLimit,topLimit)
-    wordArray = list(set(wordArray))
-    WriteToFile(outputFile,openFileMode,1)
+    print("""
+    Outputs
+    -m mode {}
+    -w words {}
+    -o output {}
+    -l limits {} to {}
+    -d difficulty {}
+    -s special characters {}
+    """.format(openFileMode,meaningfulList,outputFile,bottomLimit,topLimit,level,specialChars))
 
-elif level== 2:
-    os.system("clear")
-    print("Preparing...")
-    Level2(meaningfulList,bottomLimit,topLimit)
-    wordArray = list(set(wordArray))
-    WriteToFile(outputFile,openFileMode,2)
-
-if level== 3:
-    os.system("clear")
-    print("Preparing...")
-    if "-s" not in sys.argv:
-        print("Special characters must defined!!\n")
-        usage()
-        sys.exit()
-    Level3(meaningfulList,bottomLimit,topLimit,specialChars)
-    wordArray = list(set(wordArray))
-    WriteToFile(outputFile,openFileMode,3)
-
-if level== 4:
-    os.system("clear")
-    print("Preparing...")
-    if "-s" not in sys.argv:
-        print("Special characters must defined!!\n")
-        usage()
-        sys.exit()
-    Level4(meaningfulList,bottomLimit,topLimit,specialChars)
-    wordArray = list(set(wordArray))
-    WriteToFile(outputFile,openFileMode,4)
-
-if level == 5:
-    os.system("clear")
-    print("Preparing...")
-    if "-s" not in sys.argv:
-        print("Special characters must defined!!\n")
-        usage()
-        sys.exit()
-    Level5(meaningfulList,bottomLimit,topLimit,specialChars)
-    newArray = list(set(newArray))
-    WriteToFile(outputFile,openFileMode,5)
-
-if level == 6:
-    os.system("clear")
-    print("Preparing...")
-    if "-s" not in sys.argv:
-        print("Special characters must defined!!\n")
-        usage()
-        sys.exit()
-    Level6(meaningfulList,bottomLimit,topLimit,specialChars)
-    newArray = list(set(newArray))
-    WriteToFile(outputFile,openFileMode,6)
-
-os.system("clear")
-print("""
-Outputs
--m mode {}
--w words {}
--o output {}
--l limits {} to {}
--d difficulty {}
--s special characters {}
-""".format(openFileMode,meaningfulList,outputFile,bottomLimit,topLimit,level,specialChars))
-
-if level<=4:
-    print("List length: {}".format(len(wordArray)))
-else:
-    print("List length: {}".format(len(newArray)))
+    if level<=4:
+        print("List length: {}".format(len(wordArray)))
+    else:
+        print("List length: {}".format(len(newArray)))
