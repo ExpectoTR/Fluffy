@@ -13,7 +13,7 @@ My writing purpose is create only more flexible wordlist, because crunch is prod
 Download with git:
 
 ```
-git clone https://github.com/ExpectoTR/Fluffy
+git clone https://github.com/ozmu/Fluffy
 ```
 
 And change directory to Fluffy:
